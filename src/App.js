@@ -69,8 +69,6 @@ class Calculator extends Component {
     }
 
   processOperator(newKeyValue) {
-    console.log("state coming  into processOperator method:", JSON.stringify(this.state));
-
     const oldDisplayValue = this.state.displayValue;
     const oldOperator = this.state.operator;
     const oldWaitingForOperand = this.state.waitingForOperand;
@@ -78,13 +76,6 @@ class Calculator extends Component {
 
     var newDisplayValue = this.state.displayValue;
     var newOperator = this.state.operator;
-
-    console.log("oldDisplayValue:", oldDisplayValue);
-    console.log("oldOperator:", oldOperator);
-    console.log("oldWaitingForOperand:", oldWaitingForOperand);
-    console.log("oldFirstOperand:", oldFirstOperand);
-    console.log("newKeyValue", newKeyValue);
-
     var stringToEvaluate;
     var evaluatedValue;
 
@@ -95,17 +86,8 @@ class Calculator extends Component {
         firstOperand: oldDisplayValue,
         operator: newKeyValue
       })
-
-      console.log("displayValue:", oldDisplayValue);
-      console.log("waitingForOperand:", true);
-      console.log("firstOperand:", oldDisplayValue);
-      console.log("operator:", newKeyValue);
-      console.log("cannot make calculation yet!");
     } else {
-
       stringToEvaluate = oldFirstOperand + oldOperator + oldDisplayValue;
-      console.log("stringToEvaluate:", stringToEvaluate);
-
       try {
         evaluatedValue = math.eval(stringToEvaluate);
         newDisplayValue = evaluatedValue.toString();
@@ -116,8 +98,6 @@ class Calculator extends Component {
       if (newDisplayValue === "Infinity") evaluatedValue = '0'; //math.js evaluates division by 0 to be "Infinity"
       if (newDisplayValue === "Infinity") newDisplayValue = 'Error';
 
-      console.log("evaluatedValue:", evaluatedValue);
-
       newOperator = (newKeyValue === "=")? null: newKeyValue;
 
       this.setState({
@@ -126,12 +106,6 @@ class Calculator extends Component {
         firstOperand: newDisplayValue,
         operator: newOperator
       })
-
-      console.log("displayValue:", newDisplayValue);
-      console.log("waitingForOperand:", true);
-      console.log("firstOperand:", evaluatedValue);
-      console.log("operator:", newOperator);
-
     }
   }
 
@@ -140,17 +114,7 @@ class Calculator extends Component {
     const oldOperator = this.state.operator;
     const oldWaitingForOperand = this.state.waitingForOperand;
     const oldFirstOperand = this.state.firstOperand;
-
     const needDot= `${oldDisplayValue}`.indexOf('.');
-
-    console.log('---- processDot ---');
-    console.log("oldDisplayValue:", oldDisplayValue);
-    console.log("oldOperator:", oldOperator);
-    console.log("oldWaitingForOperand:", oldWaitingForOperand);
-    console.log("oldFirstOperand:", oldFirstOperand);
-    console.log("newKeyValue", newKeyValue);
-
-
     if (oldWaitingForOperand) {
       this.setState({
         displayValue: '0.',
