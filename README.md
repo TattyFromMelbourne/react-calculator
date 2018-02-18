@@ -17,3 +17,7 @@ This is based on a presentation and a code base by Michael Jackson, see [https:/
 ### License
 
 [MIT Licence](https://opensource.org/licenses/MIT)
+
+### Demo
+
+[https://lensoftware.com/presentations/2018-02-19](https://lensoftware.com/presentations/2018-02-19)
