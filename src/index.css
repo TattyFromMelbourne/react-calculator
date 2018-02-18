@@ -27,10 +27,15 @@ button:active {
 }
 
 #wrapper {
-  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media (max-width: 576px) {
+  #wrapper {
+    height: 100vh;
+  }
 }
 
 #calculator-wrapper {
