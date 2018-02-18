@@ -12,6 +12,8 @@ See [http://mathjs.org/download.html](http://mathjs.org/download.html) for furth
 
 ### Acknowledgement
 
-This is based on the presentations and a code base by
+This is based on a presentation and a code base by Michael Jackson, see [https://www.youtube.com/watch?v=ZtU7Mhf9vN8](https://www.youtube.com/watch?v=ZtU7Mhf9vN8) and [https://codepen.io/mjijackson/pen/xOzyGX](https://codepen.io/mjijackson/pen/xOzyGX).
 
-See [https://codepen.io/mjijackson/pen/xOzyGX](https://codepen.io/mjijackson/pen/xOzyGX) and [https://www.youtube.com/watch?v=ZtU7Mhf9vN8](https://www.youtube.com/watch?v=ZtU7Mhf9vN8)
+### License
+
+[MIT Licence](https://opensource.org/licenses/MIT)
