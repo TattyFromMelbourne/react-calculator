@@ -1,7 +1,7 @@
-### react-calculator
-Calculator built with React.js 
+# react-calculator
+Calculator built with React.js
 
-# Build
+### Build
 
 As well as the usual packages for React.js (I used the npm recommended `create-react-app`) you will also need to download the *math.js* package:-
 
