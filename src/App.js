@@ -9,10 +9,9 @@ const operators =['/', '*','-','+','='];
 /* Only 6 characters can be displayed at the optimal full size.
 If the character string is longer, we need to scale the display down */
 const maxCharsAtFullSize = 6;
-const scaleFactor = 'scale(0.32)';
+const scaleFactor = 'scale(0.36)';
 
 const maxInputNumber = 999999999999999.9;
-const minInputNumber = 0.000000000000001;
 const usePrecision = 16;
 
 /* Components */
@@ -22,12 +21,15 @@ class CalculatorDisplay extends Component {
       displayed characters smaller */
       const { value } = this.props;
       const scaleDown = (`${value}`.length) > maxCharsAtFullSize ? scaleFactor:'scale(1)';
-      var formattedValue = parseFloat(value).toLocaleString({maximumSignificantDigits: usePrecision});
+      var formattedValue = parseFloat(value).toLocaleString({maximumFractionDigits: usePrecision});
+      if (formattedValue.length > (usePrecision - 1)) {
+        formattedValue = parseFloat(value).toExponential(usePrecision- 4); // Need at least 4 characters for scientific notation e.g. e+14
+      }
 
         return (
           <div className="calculator-display">
             <div className="auto-scaling-text" style={{transform: scaleDown}}>
-              {value}
+              {formattedValue}
             </div>
           </div>
         );
@@ -58,7 +60,7 @@ class Calculator extends Component {
     } else {
       var newDisplayValue = (oldDisplayValue === '0') ? `${newKeyValue}` : `${(this.state.displayValue)}${newKeyValue}`; //no leading zero
 
-      if ( parseFloat(newDisplayValue) < maxInputNumber && parseFloat(newDisplayValue).toPrecision(usePrecision) > minInputNumber )  //make sure input within accepatble range
+      if ( parseFloat(newDisplayValue) < maxInputNumber )  //make sure input within accepatble range
         this.setState({
           displayValue: newDisplayValue,
           waitingForOperand: false
@@ -76,10 +78,6 @@ class Calculator extends Component {
 
     var newDisplayValue = this.state.displayValue;
     var newOperator = this.state.operator;
-    /*
-    var newWaitingForOperand = this.state.waitingForOperand;
-    var newFirstOperand = this.state.firstOperand;
-    */
 
     console.log("oldDisplayValue:", oldDisplayValue);
     console.log("oldOperator:", oldOperator);
@@ -167,18 +165,6 @@ class Calculator extends Component {
         })
       }
     }
-
-    /*
-
-    console.log('needDot', needDot);
-    if ( needDot === -1 ) { //only allow point if it's not already present or we are starting on a new operand
-      var newDisplayValue = `${(this.state.displayValue)}${newKeyValue}`;
-      this.setState({
-        displayValue: newDisplayValue,
-        waitingForOperand: false
-      })
-    }
-    */
   }
 
   processPercentage(newKeyValue) {
