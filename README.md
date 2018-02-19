@@ -1,6 +1,10 @@
 # react-calculator
 Calculator built with React.js
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm react: v16.2.0](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react)
+[![npm mathjs: v3.20.2](https://img.shields.io/npm/v/mathjs.svg)](https://www.npmjs.com/package/mathjs)
+
 ### Build
 
 As well as the usual packages for React.js (e.g. use the npm recommended `create-react-app`) you will also need to download the `mathjs` package:-
