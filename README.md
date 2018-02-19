@@ -2,8 +2,8 @@
 Calculator built with React.js
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![npm react: v16.2.0](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react)
-[![npm mathjs: v3.20.2](https://img.shields.io/npm/v/mathjs.svg)](https://www.npmjs.com/package/mathjs)
+[![npm react package: v16.2.0](https://img.shields.io/badge/npm%20react%20package%3A-%20v16.2.0-blue.svg?style=flat)](https://www.npmjs.com/package/react)
+[![npm mathjs package: v3.20.2](https://img.shields.io/badge/npm%20mathjs%20package%3A-%20v3.20.2-blue.svg?style=flat)](https://www.npmjs.com/package/mathjs)
 
 ### Build
 
