@@ -1,39 +1,50 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import math from 'mathjs';
 import './App.css';
 
 /* Global constants */
-const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-const operators =['/', '*','-','+','='];
+const digits = [
+  '0',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9'
+];
+const operators = ['/', '*', '-', '+', '='];
 
 /* Only 6 characters can be displayed at the optimal full size.
 If the character string is longer, we need to scale the display down */
 const maxCharsAtFullSize = 6;
 const scaleFactor = 'scale(0.36)';
 
-const maxInputNumber = 999999999999999.9;
+// const maxInputNumber = 999999999999999.9;
 const usePrecision = 16;
 
 /* Components */
 class CalculatorDisplay extends Component {
-      render() {
-      /* If more characters cannot be displayed in given area, make the
-      displayed characters smaller */
-      const { value } = this.props;
-      const scaleDown = (`${value}`.length) > maxCharsAtFullSize ? scaleFactor:'scale(1)';
-      var formattedValue = parseFloat(value).toLocaleString({maximumFractionDigits: usePrecision});
-      if (formattedValue.length > (usePrecision - 1)) {
-        formattedValue = parseFloat(value).toExponential(usePrecision- 4); // Need at least 4 characters for scientific notation e.g. e+14
-      }
+  render() {
+    const {value} = this.props;
+    var formattedValue = (value === 'Error')?value:parseFloat(value).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: usePrecision});
 
-        return (
-          <div className="calculator-display">
-            <div className="auto-scaling-text" style={{transform: scaleDown}}>
-              {formattedValue}
-            </div>
-          </div>
-        );
+    /* If more characters cannot be displayed in given area, make the displayed characters smaller */
+    const scaleDown = (`${formattedValue}`.length) > maxCharsAtFullSize ? scaleFactor : 'scale(1)';
+
+/* if number is too large, output it in scientific notation */
+    if (formattedValue.length > (usePrecision - 1)) {
+      formattedValue = parseFloat(value).toExponential(usePrecision - 4); // Allow at least 4 characters for scientific notation e.g. e+14
     }
+
+    return (<div className="calculator-display">
+      <div className="auto-scaling-text" style={{transform: scaleDown}}>
+        {formattedValue}
+      </div>
+    </div>);
+  }
 }
 
 class Calculator extends Component {
@@ -49,24 +60,23 @@ class Calculator extends Component {
   }
 
   processDigit(newKeyValue) {
-    const oldDisplayValue = `${(this.state.displayValue)}`;
+    const oldDisplayValue = `${ (this.state.displayValue)}`;
     const waitingForOperand = this.state.waitingForOperand;
 
     if (waitingForOperand) {
-      this.setState({
-        displayValue: newKeyValue,
-        waitingForOperand: false
-      })
+      this.setState({displayValue: newKeyValue, waitingForOperand: false})
     } else {
-      var newDisplayValue = (oldDisplayValue === '0') ? `${newKeyValue}` : `${(this.state.displayValue)}${newKeyValue}`; //no leading zero
+      var newDisplayValue = (oldDisplayValue === '0')
+        ? `${newKeyValue}`
+        : `${ (this.state.displayValue)}${newKeyValue}`; //no leading zero
 
-      if ( parseFloat(newDisplayValue) < maxInputNumber )  //make sure input within accepatble range
-        this.setState({
-          displayValue: newDisplayValue,
-          waitingForOperand: false
-        })
-      }
+/*
+      if (parseFloat(newDisplayValue) < maxInputNumber) //make sure input within accepatble range
+*/
+      this.setState({displayValue: newDisplayValue, waitingForOperand: false})
+
     }
+  }
 
   processOperator(newKeyValue) {
     const oldDisplayValue = this.state.displayValue;
@@ -79,105 +89,80 @@ class Calculator extends Component {
     var stringToEvaluate;
     var evaluatedValue;
 
-    if (oldFirstOperand === '0' || oldOperator == null || oldWaitingForOperand ) {  // if not ready to do calculation
-      this.setState({
-        displayValue: oldDisplayValue,
-        waitingForOperand: true,
-        firstOperand: oldDisplayValue,
-        operator: newKeyValue
-      })
+    if (oldFirstOperand === '0' || oldOperator == null || oldWaitingForOperand) { // if not ready to do calculation
+      this.setState({displayValue: oldDisplayValue, waitingForOperand: true, firstOperand: oldDisplayValue, operator: newKeyValue})
     } else {
       stringToEvaluate = oldFirstOperand + oldOperator + oldDisplayValue;
       try {
         evaluatedValue = math.eval(stringToEvaluate);
         newDisplayValue = evaluatedValue.toString();
-      } catch(e) {
+      } catch (e) {
         newDisplayValue = 'Error';
       }
 
-      if (newDisplayValue === "Infinity") evaluatedValue = '0'; //math.js evaluates division by 0 to be "Infinity"
-      if (newDisplayValue === "Infinity") newDisplayValue = 'Error';
+      if (newDisplayValue === "Infinity")
+        evaluatedValue = '0'; //math.js evaluates division by 0 to be "Infinity"
+      if (newDisplayValue === "Infinity")
+        newDisplayValue = 'Error';
 
-      newOperator = (newKeyValue === "=")? null: newKeyValue;
+      newOperator = (newKeyValue === "=")
+        ? null
+        : newKeyValue;
 
-      this.setState({
-        displayValue: newDisplayValue,
-        waitingForOperand: true,
-        firstOperand: newDisplayValue,
-        operator: newOperator
-      })
+      this.setState({displayValue: newDisplayValue, waitingForOperand: true, firstOperand: newDisplayValue, operator: newOperator})
     }
   }
 
   processDot(newKeyValue) {
     const oldDisplayValue = this.state.displayValue;
-    const oldOperator = this.state.operator;
     const oldWaitingForOperand = this.state.waitingForOperand;
-    const oldFirstOperand = this.state.firstOperand;
-    const needDot= `${oldDisplayValue}`.indexOf('.');
+    const needDot = `${oldDisplayValue}`.indexOf('.');
     if (oldWaitingForOperand) {
-      this.setState({
-        displayValue: '0.',
-        waitingForOperand: false
-      })
+      this.setState({displayValue: '0.', waitingForOperand: false})
     } else {
-      if ( needDot === -1 ) { //only allow point if it's not already present or we are starting on a new operand
+      if (needDot === -1) { //only allow point if it's not already present or we are starting on a new operand
         var newDisplayValue = `${oldDisplayValue}${newKeyValue}`;
-        this.setState({
-          displayValue: newDisplayValue,
-          waitingForOperand: false
-        })
+        this.setState({displayValue: newDisplayValue, waitingForOperand: false})
       }
     }
   }
 
   processPercentage(newKeyValue) {
-    const oldDisplayValue = `${(this.state.displayValue)}`;
+    const oldDisplayValue = `${ (this.state.displayValue)}`;
     const newDisplayValue = parseFloat(oldDisplayValue).toPrecision(usePrecision) / 100
-    this.setState({
-      displayValue: newDisplayValue,
-      waitingForOperand: false
-    })
+    this.setState({displayValue: newDisplayValue, waitingForOperand: false})
   }
 
   processPlusMinusToggle(newKeyValue) {
-    const oldDisplayValue = `${(this.state.displayValue)}`;
+    const oldDisplayValue = `${ (this.state.displayValue)}`;
     const newDisplayValue = parseFloat(oldDisplayValue).toPrecision(usePrecision) * -1
-    this.setState({
-      displayValue: newDisplayValue,
-      waitingForOperand: false
-    })
+    this.setState({displayValue: newDisplayValue, waitingForOperand: false})
   }
 
   processClear() {
-    this.setState({
-        displayValue: '0',
-        firstOperand: '0',
-        operator: null,
-        waitingForOperand: false
-    })
+    this.setState({displayValue: '0', firstOperand: '0', operator: null, waitingForOperand: false})
   }
 
   processFunctionKey(newKeyValue) {
-    switch(newKeyValue) {
-        case "C":
-          this.processClear(newKeyValue);
+    switch (newKeyValue) {
+      case "C":
+        this.processClear(newKeyValue);
         break;
-        case "±":
-          this.processPlusMinusToggle(newKeyValue);
+      case "±":
+        this.processPlusMinusToggle(newKeyValue);
         break;
-        case ".":
-          this.processDot(newKeyValue);
+      case ".":
+        this.processDot(newKeyValue);
         break;
-        case "%":
-          this.processPercentage(newKeyValue);
+      case "%":
+        this.processPercentage(newKeyValue);
         break;
-        default:
-          this.processUnknownKey(newKeyValue);
+      default:
+        this.processUnknownKey(newKeyValue);
     }
   }
 
-  processUnknownKey(newKeyValue){
+  processUnknownKey(newKeyValue) {
     /* don't do anything, just write the error to the console log */
     console.log('Unexpected input: ', newKeyValue);
   }
@@ -191,79 +176,74 @@ class Calculator extends Component {
     } else {
       var isOperator = operators.includes(newKeyValue);
       if (isOperator) {
-          this.processOperator(newKeyValue);
+        this.processOperator(newKeyValue);
       } else {
-          this.processFunctionKey(newKeyValue)
+        this.processFunctionKey(newKeyValue)
       }
     }
   }
 
   render() {
-      return (
-          <div className="calculator">
-            <CalculatorDisplay value={this.state.displayValue}/>
+    return (<div className="calculator">
+      <CalculatorDisplay value={this.state.displayValue}/>
 
-            <div className="calculator-keypad">
-              <div className="input-keys">
-                <div className="function-keys">
-                  <button id="key-clear" value="C" className="calculator-key key-clear" onClick={this.handleClick}>AC</button>
-                  <button id="key-sign" value="±" className="calculator-key key-sign" onClick={this.handleClick}>&plusmn;</button>
-                  <button id="key-percent" value="%" className="calculator-key key-percent" onClick={this.handleClick}>%</button>
-                </div>
-
-                  <div className="digit-keys">
-                    <button id="key-0" value="0" className="calculator-key key-0" onClick={this.handleClick}>0</button>
-                    <button id="key-dot" value="." className="calculator-key key-dot" onClick={this.handleClick}>&middot;</button>
-                    <button id="key-1" value="1" className="calculator-key key-1" onClick={this.handleClick}>1</button>
-                    <button id="key-2" value="2" className="calculator-key key-2" onClick={this.handleClick}>2</button>
-                    <button id="key-3" value="3" className="calculator-key key-3" onClick={this.handleClick}>3</button>
-                    <button id="key-4" value="4" className="calculator-key key-4" onClick={this.handleClick}>4</button>
-                    <button id="key-5" value="5" className="calculator-key key-5" onClick={this.handleClick}>5</button>
-                    <button id="key-6" value="6" className="calculator-key key-6" onClick={this.handleClick}>6</button>
-                    <button id="key-7" value="7" className="calculator-key key-7" onClick={this.handleClick}>7</button>
-                    <button id="key-8" value="8" className="calculator-key key-8" onClick={this.handleClick}>8</button>
-                    <button id="key-9" value="9" className="calculator-key key-9" onClick={this.handleClick}>9</button>
-                  </div>
-              </div>
-
-              <div className="operator-keys">
-                <button id="key-divide" value="/" className="calculator-key key-divide" onClick={this.handleClick}>&divide;</button>
-                <button id="key-multiply" value="*" className="calculator-key key-multiply" onClick={this.handleClick}>&times;</button>
-                <button id="key-subtract" value="-" className="calculator-key key-subtract" onClick={this.handleClick}>&ndash;</button>
-                <button id="key-add" value="+" className="calculator-key key-add" onClick={this.handleClick}>+</button>
-                <button id="key-equals" value="=" className="calculator-key key-equals" onClick={this.handleClick}>=</button>
-              </div>
-            </div>
+      <div className="calculator-keypad">
+        <div className="input-keys">
+          <div className="function-keys">
+            <button id="key-clear" value="C" className="calculator-key key-clear" onClick={this.handleClick}>AC</button>
+            <button id="key-sign" value="±" className="calculator-key key-sign" onClick={this.handleClick}>&plusmn;</button>
+            <button id="key-percent" value="%" className="calculator-key key-percent" onClick={this.handleClick}>%</button>
           </div>
-    )
+
+          <div className="digit-keys">
+            <button id="key-0" value="0" className="calculator-key key-0" onClick={this.handleClick}>0</button>
+            <button id="key-dot" value="." className="calculator-key key-dot" onClick={this.handleClick}>&middot;</button>
+            <button id="key-1" value="1" className="calculator-key key-1" onClick={this.handleClick}>1</button>
+            <button id="key-2" value="2" className="calculator-key key-2" onClick={this.handleClick}>2</button>
+            <button id="key-3" value="3" className="calculator-key key-3" onClick={this.handleClick}>3</button>
+            <button id="key-4" value="4" className="calculator-key key-4" onClick={this.handleClick}>4</button>
+            <button id="key-5" value="5" className="calculator-key key-5" onClick={this.handleClick}>5</button>
+            <button id="key-6" value="6" className="calculator-key key-6" onClick={this.handleClick}>6</button>
+            <button id="key-7" value="7" className="calculator-key key-7" onClick={this.handleClick}>7</button>
+            <button id="key-8" value="8" className="calculator-key key-8" onClick={this.handleClick}>8</button>
+            <button id="key-9" value="9" className="calculator-key key-9" onClick={this.handleClick}>9</button>
+          </div>
+        </div>
+
+        <div className="operator-keys">
+          <button id="key-divide" value="/" className="calculator-key key-divide" onClick={this.handleClick}>&divide;</button>
+          <button id="key-multiply" value="*" className="calculator-key key-multiply" onClick={this.handleClick}>&times;</button>
+          <button id="key-subtract" value="-" className="calculator-key key-subtract" onClick={this.handleClick}>&ndash;</button>
+          <button id="key-add" value="+" className="calculator-key key-add" onClick={this.handleClick}>+</button>
+          <button id="key-equals" value="=" className="calculator-key key-equals" onClick={this.handleClick}>=</button>
+        </div>
+      </div>
+    </div>)
   }
 }
 
 class AboutTheApp extends Component {
   render() {
-    return (
-       <header className="App-header">
-         <h1 className="App-title">React Calculator</h1>
-         <div className="App-intro">
-           Calculator built with React.js v16, see the <a href="https://github.com/TattyFromMelbourne/react-calculator" target="_new">GitHub repo</a>.
-         </div>
-       </header>
-    );
+    return (<header className="App-header">
+      <h1 className="App-title">React Calculator</h1>
+      <div className="App-intro">
+        Calculator built with React.js v16, see the
+        <a href="https://github.com/TattyFromMelbourne/react-calculator" target="_new">GitHub repo</a>.
+      </div>
+    </header>);
   }
 }
 
 class App extends Component {
   render() {
-    return (
-      <div className="App">
-        <AboutTheApp/>
-       <div id="wrapper">
-        <div id ="calculator-wrapper">
+    return (<div className="App">
+      <AboutTheApp/>
+      <div id="wrapper">
+        <div id="calculator-wrapper">
           <Calculator/>
         </div>
-       </div>
       </div>
-    );
+    </div>);
   }
 }
 

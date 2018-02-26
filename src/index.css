@@ -16,7 +16,6 @@ button {
   border: none;
   padding: 0;
   font-family: inherit;
-  user-select: none;
   cursor: pointer;
   outline: none;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
