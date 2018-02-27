@@ -72,7 +72,7 @@ class Calculator extends Component {
       this.setState({displayValue: newKeyValue, waitingForOperand: false})
     } else {
       var newDisplayValue = (oldDisplayValue === '0')?`${newKeyValue}`:`${ (this.state.displayValue)}${newKeyValue}`; //no leading zero
-      this.setState({displayValue: newDisplayValue, waitingForOperand: false})
+      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false})
 
     }
   }
@@ -106,7 +106,7 @@ class Calculator extends Component {
 
       newOperator = (newKeyValue === "=")? null: newKeyValue;
 
-      this.setState({displayValue: newDisplayValue, waitingForOperand: true, firstOperand: newDisplayValue, operator: newOperator})
+      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: true, firstOperand: newDisplayValue, operator: newOperator})
     }
   }
 
@@ -120,7 +120,7 @@ class Calculator extends Component {
     } else {
       if (needDot === -1) { //only allow point if it's not already present or we are starting on a new operand
         var newDisplayValue = `${oldDisplayValue}${newKeyValue}`;
-        this.setState({displayValue: newDisplayValue, waitingForOperand: false})
+        this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false})
       }
     }
   }
@@ -128,7 +128,7 @@ class Calculator extends Component {
   processPercentage(newKeyValue) {
     const oldDisplayValue = `${ (this.state.displayValue)}`;
     const newDisplayValue = parseFloat(oldDisplayValue).toPrecision(maxPrecision) / 100
-    this.setState({displayValue: newDisplayValue, waitingForOperand: false})
+    this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false})
   }
 
   processPlusMinusToggle(newKeyValue) {
