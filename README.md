@@ -7,7 +7,7 @@ Calculator built with React.js
 
 ### Build
 
-As well as package/s for developing and building in React.js, here I used the recommended npm package `create&#8209;react&#8209;app`, you will also need the `mathjs` package:-
+As well as package/s for developing and building in React.js, the recommended npm package `create-react-app` was used, you will also need the `mathjs` package:-
 
 ```
 npm install mathjs
