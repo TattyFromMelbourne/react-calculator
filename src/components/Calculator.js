@@ -53,7 +53,8 @@ class Calculator extends Component {
       displayValue: '0',
       operator: null,
       waitingForOperand: false,
-      firstOperand: '0'
+      firstOperand: '0',
+      clearAll: true
     };
     // This binding is necessary to make `this` work in the callback
     this.handleClick = this.handleClick.bind(this);
@@ -63,10 +64,10 @@ class Calculator extends Component {
     const { displayValue, waitingForOperand } = this.state;
 
     if (waitingForOperand) {
-      this.setState({displayValue: `${newKeyValue}`, waitingForOperand: false});
+      this.setState({displayValue: `${newKeyValue}`, waitingForOperand: false, clearAll: false});
     } else {
       let newDisplayValue = (displayValue === '0')?`${newKeyValue}`:`${(displayValue)}${newKeyValue}`; //no leading zero
-      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false});
+      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false, clearAll: false});
     }
   }
 
@@ -77,7 +78,7 @@ class Calculator extends Component {
     let stringToEvaluate = null;
 
     if (firstOperand === '0' || operator == null || waitingForOperand) { // if not ready to do calculation
-      this.setState({waitingForOperand: true, firstOperand: displayValue, operator: newKeyValue});
+      this.setState({waitingForOperand: true, firstOperand: displayValue, operator: newKeyValue, clearAll: false});
       return;
     } else {
       stringToEvaluate = `${firstOperand}${operator}${displayValue}`;
@@ -90,7 +91,7 @@ class Calculator extends Component {
         newDisplayValue = 'Error';
       }
       newOperator = (newKeyValue === "=")? null: newKeyValue;
-      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: true, firstOperand: `${newDisplayValue}`, operator: newOperator})
+      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: true, firstOperand: `${newDisplayValue}`, operator: newOperator, clearAll: false})
     }
   }
 
@@ -100,11 +101,11 @@ class Calculator extends Component {
     let newDisplayValue = null;
 
     if (waitingForOperand) { // allow point if starting on a new operand
-      this.setState({displayValue: '0.', waitingForOperand: false})
+      this.setState({displayValue: '0.', waitingForOperand: false, clearAll: false})
     } else {
       if (needPoint) { //if not inputting new operand, only allow point if it's not already present
         newDisplayValue = `${displayValue}${newKeyValue}`;
-        this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false})
+        this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false, clearAll: false})
       }
     }
   }
@@ -112,17 +113,23 @@ class Calculator extends Component {
   processPercentage(newKeyValue) {
     const { displayValue } = this.state;
     const newDisplayValue = parseFloat(displayValue).toPrecision(maxPrecision) / 100;
-    this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false});
+    this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false, clearAll: false});
   }
 
   processPlusMinusToggle(newKeyValue) {
     const { displayValue } = this.state;
     const newDisplayValue = parseFloat(displayValue).toPrecision(maxPrecision) * -1
-    this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false})
+    this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false, clearAll: false})
   }
 
   processClear() {
-    this.setState({displayValue: '0', firstOperand: '0', operator: null, waitingForOperand: false})
+    const { clearAll } = this.state;
+    console.log('clearAll', clearAll);
+    if ( clearAll ) {
+      this.setState({displayValue: '0', firstOperand: '0', operator: null, waitingForOperand: false, clearAll: true})
+    } else {
+      this.setState({displayValue: '0', clearAll: true})
+    }
   }
 
 
@@ -176,7 +183,7 @@ class Calculator extends Component {
       <div className="calculator-keypad">
         <div className="input-keys">
           <div className="function-keys">
-            <button id="key-clear" value="C" className="calculator-key key-clear" onClick={this.handleClick}>AC</button>
+            <button id="key-clear" value="C" className="calculator-key key-clear" onClick={this.handleClick}>{this.state.clearAll?'AC':'C'}</button>
             <button id="key-sign" value="±" className="calculator-key key-sign" onClick={this.handleClick}>&plusmn;</button>
             <button id="key-percent" value="%" className="calculator-key key-percent" onClick={this.handleClick}>%</button>
           </div>
