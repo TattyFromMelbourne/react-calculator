@@ -17,33 +17,26 @@ const maxPrecision = 16;
 class CalculatorDisplay extends Component {
   render() {
     const {value} = this.props;
-    var formattedValue = (value === 'Error')?value:parseFloat(value).toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: maxPrecision,
-      minimumSignificantDigits: 1,
-      maximumSignificantDigits: maxPrecision});
-    var decimalValue;
-    var precisionWithFraction;
-    var dotAt = `${value}`.indexOf('.');
+    const pointAt = `${value}`.indexOf('.');
+    const decimalValue = value.substring(pointAt, math.eval(value.length));
+    const precisionWithFraction = (pointAt === -1 )?0:math.eval(decimalValue.length - 1);
+    let formattedValue = null;
+    let scaleDown = null;
 
-    if (dotAt > -1) {
-       decimalValue = value.substring(dotAt, math.eval(value.length));
-       precisionWithFraction = math.eval(decimalValue.length - 1); // (1 character is taken up with "."
-       if (precisionWithFraction > maxPrecision ) precisionWithFraction = maxPrecision;
+    formattedValue = parseFloat(value).toLocaleString(undefined, {minimumFractionDigits: precisionWithFraction}); // take the default locale formatting
 
-       if ( precisionWithFraction > 0 ) {
-         formattedValue = parseFloat(value).toLocaleString(undefined, {
-           minimumFractionDigits: precisionWithFraction});
+    if (formattedValue === 'NaN') { //account for errors
+        formattedValue = 'Error';
+    } else {
+      if (formattedValue.length > (maxPrecision - 1)) {
+        formattedValue = parseFloat(value).toExponential(maxPrecision - 4); // Allow at least 4 characters (for scientific notation e.g. e+14) in the output string
+        if (formattedValue === 'NaN') { //account for overflow
+            formattedValue = 'Overflow\xA0Error';
+        }
       }
     }
 
-    /* if number is too large, output it in scientific notation */
-    if (formattedValue.length > (maxPrecision - 1)) {
-      formattedValue = parseFloat(value).toExponential(maxPrecision - 4); // Allow at least 4 characters (for scientific notation e.g. e+14) in the output string
-    }
-
-    /* If more characters cannot be displayed in given area, make the displayed characters smaller */
-    const scaleDown = (`${formattedValue}`.length) > maxCharsAtFullSize ? scaleFactor : 'scale(1)';
+    scaleDown = (`${formattedValue}`.length) > maxCharsAtFullSize ? scaleFactor : 'scale(1)';
 
     return (<div className="calculator-display">
       <div className="auto-scaling-text" style={{transform: scaleDown}}>
@@ -61,84 +54,81 @@ class Calculator extends Component {
       operator: null,
       waitingForOperand: false,
       firstOperand: '0'
-    }
+    };
+    // This binding is necessary to make `this` work in the callback
+    this.handleClick = this.handleClick.bind(this);
   }
 
   processDigit(newKeyValue) {
-    const oldDisplayValue = `${ (this.state.displayValue)}`;
-    const oldWaitingForOperand = this.state.waitingForOperand;
+    const { displayValue, waitingForOperand } = this.state;
 
-    if (oldWaitingForOperand) {
-      this.setState({displayValue: newKeyValue, waitingForOperand: false})
+    if (waitingForOperand) {
+      this.setState({displayValue: `${newKeyValue}`, waitingForOperand: false});
     } else {
-      var newDisplayValue = (oldDisplayValue === '0')?`${newKeyValue}`:`${ (this.state.displayValue)}${newKeyValue}`; //no leading zero
-      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false})
-
+      let newDisplayValue = (displayValue === '0')?`${newKeyValue}`:`${(displayValue)}${newKeyValue}`; //no leading zero
+      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false});
     }
   }
 
   processOperator(newKeyValue) {
-    const oldDisplayValue = this.state.displayValue;
-    const oldOperator = this.state.operator;
-    const oldWaitingForOperand = this.state.waitingForOperand;
-    const oldFirstOperand = this.state.firstOperand;
+    const { displayValue, operator, waitingForOperand, firstOperand } = this.state;
+    let newDisplayValue = null;
+    let newOperator = null;
+    let stringToEvaluate = null;
 
-    var newDisplayValue = this.state.displayValue;
-    var newOperator = this.state.operator;
-    var stringToEvaluate;
-    var evaluatedValue;
-
-    if (oldFirstOperand === '0' || oldOperator == null || oldWaitingForOperand) { // if not ready to do calculation
-      this.setState({displayValue: oldDisplayValue, waitingForOperand: true, firstOperand: oldDisplayValue, operator: newKeyValue})
+    if (firstOperand === '0' || operator == null || waitingForOperand) { // if not ready to do calculation
+      this.setState({waitingForOperand: true, firstOperand: displayValue, operator: newKeyValue});
+      return;
     } else {
-      stringToEvaluate = oldFirstOperand + oldOperator + oldDisplayValue;
+      stringToEvaluate = `${firstOperand}${operator}${displayValue}`;
       try {
-        evaluatedValue = math.eval(stringToEvaluate);
-        newDisplayValue = evaluatedValue.toString();
+        newDisplayValue = `${math.eval(stringToEvaluate)}`
       } catch (e) {
         newDisplayValue = 'Error';
       }
-
-      if (newDisplayValue === "Infinity")
-        evaluatedValue = '0'; //math.js evaluates division by 0 to be "Infinity"
-      if (newDisplayValue === "Infinity")
+      if (newDisplayValue === "Infinity") { //math.js evaluates division by 0 to be "Infinity"
         newDisplayValue = 'Error';
-
+      }
       newOperator = (newKeyValue === "=")? null: newKeyValue;
-
-      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: true, firstOperand: newDisplayValue, operator: newOperator})
+      this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: true, firstOperand: `${newDisplayValue}`, operator: newOperator})
     }
   }
 
-  processDot(newKeyValue) {
-    const oldDisplayValue = this.state.displayValue;
-    const oldWaitingForOperand = this.state.waitingForOperand;
-    const needDot = `${oldDisplayValue}`.indexOf('.');
+  processPoint(newKeyValue) {
+    const { displayValue, waitingForOperand } = this.state;
+    const needPoint = `${displayValue}`.indexOf('.')===-1?true:false;
+    let newDisplayValue = null;
 
-    if (oldWaitingForOperand) {
+    if (waitingForOperand) { // allow point if starting on a new operand
       this.setState({displayValue: '0.', waitingForOperand: false})
     } else {
-      if (needDot === -1) { //only allow point if it's not already present or we are starting on a new operand
-        var newDisplayValue = `${oldDisplayValue}${newKeyValue}`;
+      if (needPoint) { //if not inputting new operand, only allow point if it's not already present
+        newDisplayValue = `${displayValue}${newKeyValue}`;
         this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false})
       }
     }
   }
 
   processPercentage(newKeyValue) {
-    const oldDisplayValue = `${ (this.state.displayValue)}`;
-    const newDisplayValue = parseFloat(oldDisplayValue).toPrecision(maxPrecision) / 100
-    this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false})
+    const { displayValue } = this.state;
+    const newDisplayValue = parseFloat(displayValue).toPrecision(maxPrecision) / 100;
+    this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false});
   }
 
   processPlusMinusToggle(newKeyValue) {
-    const oldDisplayValue = `${ (this.state.displayValue)}`;
-    const newDisplayValue = parseFloat(oldDisplayValue).toPrecision(maxPrecision) * -1
+    const { displayValue } = this.state;
+    const newDisplayValue = parseFloat(displayValue).toPrecision(maxPrecision) * -1
     this.setState({displayValue: `${newDisplayValue}`, waitingForOperand: false})
   }
 
   processClear() {
     this.setState({displayValue: '0', firstOperand: '0', operator: null, waitingForOperand: false})
+  }
+
+
+  processUnknownKey(newKeyValue) {
+    /* don't do anything, just write the error to the console log */
+    console.log('Unexpected input: ', newKeyValue);
   }
 
   processFunctionKey(newKeyValue) {
@@ -150,7 +140,7 @@ class Calculator extends Component {
         this.processPlusMinusToggle(newKeyValue);
         break;
       case ".":
-        this.processDot(newKeyValue);
+        this.processPoint(newKeyValue);
         break;
       case "%":
         this.processPercentage(newKeyValue);
@@ -160,23 +150,21 @@ class Calculator extends Component {
     }
   }
 
-  processUnknownKey(newKeyValue) {
-    /* don't do anything, just write the error to the console log */
-    console.log('Unexpected input: ', newKeyValue);
+  handleClick(e) {
+    this.processNewKey(`${e.target.value}`);
   }
 
-  handleClick = (e) => {
-    const newKeyValue = `${e.target.value}`;
+  processNewKey(newKeyValue) {
     const isDigit = digits.includes(newKeyValue);
+    const isOperator = operators.includes(newKeyValue);
 
     if (isDigit) {
       this.processDigit(newKeyValue);
     } else {
-      var isOperator = operators.includes(newKeyValue);
       if (isOperator) {
         this.processOperator(newKeyValue);
       } else {
-        this.processFunctionKey(newKeyValue)
+        this.processFunctionKey(newKeyValue);
       }
     }
   }
