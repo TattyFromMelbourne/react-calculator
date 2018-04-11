@@ -14,36 +14,33 @@ const scaleFactor = 'scale(0.36)';
 const maxPrecision = 16;
 
 /* Components */
-class CalculatorDisplay extends Component {
-  render() {
-    const {value} = this.props;
-    const pointAt = `${value}`.indexOf('.');
-    const decimalValue = value.substring(pointAt, math.eval(value.length));
-    const precisionWithFraction = (pointAt === -1 )?0:math.eval(decimalValue.length - 1);
-    let formattedValue = null;
-    let scaleDown = null;
+function CalculatorDisplay(props) {
+  const value = props.value;
+  const pointAt = `${value}`.indexOf('.');
+  const decimalValue = value.substring(pointAt, math.eval(value.length));
+  const precisionWithFraction = (pointAt === -1 )?0:math.eval(decimalValue.length - 1);
+  let formattedValue = null;
+  let scaleDown = null;
 
-    formattedValue = parseFloat(value).toLocaleString(undefined, {minimumFractionDigits: precisionWithFraction}); // take the default locale formatting
-
-    if (formattedValue === 'NaN') { //account for errors
-        formattedValue = 'Error';
-    } else {
-      if (formattedValue.length > (maxPrecision - 1)) {
-        formattedValue = parseFloat(value).toExponential(maxPrecision - 4); // Allow at least 4 characters (for scientific notation e.g. e+14) in the output string
-        if (formattedValue === 'NaN') { //account for overflow
-            formattedValue = 'Overflow\xA0Error';
-        }
+  formattedValue = parseFloat(value).toLocaleString(undefined, {minimumFractionDigits: precisionWithFraction}); // take the default locale formatting
+  if (formattedValue === 'NaN') { //account for errors
+    formattedValue = 'Error';
+  } else {
+    if (formattedValue.length > (maxPrecision - 1)) {
+      formattedValue = parseFloat(value).toExponential(maxPrecision - 4); // Allow at least 4 characters (for scientific notation e.g. e+14) in the output string
+      if (formattedValue === 'NaN') { //account for overflow
+        formattedValue = 'Overflow\xA0Error';
       }
     }
-
-    scaleDown = (`${formattedValue}`.length) > maxCharsAtFullSize ? scaleFactor : 'scale(1)';
-
-    return (<div className="calculator-display">
+  }
+  scaleDown = (`${formattedValue}`.length) > maxCharsAtFullSize ? scaleFactor : 'scale(1)';
+  return (
+    <div className="calculator-display">
       <div className="auto-scaling-text" style={{transform: scaleDown}}>
         {formattedValue}
+        </div>
       </div>
-    </div>);
-  }
+    );
 }
 
 class Calculator extends Component {
