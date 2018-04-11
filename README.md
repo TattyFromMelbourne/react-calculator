@@ -45,4 +45,4 @@ npm run build
 
 ### Acknowledgement
 
-This exercise is based on a presentation and code base by Michael Jackson, see [https://www.youtube.com/watch?v=ZtU7Mhf9vN8](https://www.youtube.com/watch?v=ZtU7Mhf9vN8) and [https://codepen.io/mjijackson/pen/xOzyGX](https://codepen.io/mjijackson/pen/xOzyGX).
+This exercise is inspired by a presentation and code base by Michael Jackson, see [https://www.youtube.com/watch?v=ZtU7Mhf9vN8](https://www.youtube.com/watch?v=ZtU7Mhf9vN8) and [https://codepen.io/mjijackson/pen/xOzyGX](https://codepen.io/mjijackson/pen/xOzyGX).
