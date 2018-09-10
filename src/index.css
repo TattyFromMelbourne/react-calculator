@@ -31,11 +31,15 @@ button:active {
   justify-content: center;
 }
 
+/*
 @media (max-width: 576px) {
   #wrapper {
+
     height: 100vh;
+    margin-top: auto;
   }
 }
+*/
 
 #calculator-wrapper {
   width: 320px;

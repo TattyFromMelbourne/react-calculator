@@ -16,7 +16,7 @@
   font: normal 1.2em 'Roboto';
 }
 
-@media (max-width: 576px) {
+@media (max-width: 767px) {
   .App-header {
     display: none;
     visibility: hidden;
