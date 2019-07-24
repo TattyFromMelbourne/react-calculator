@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import math from 'mathjs';
+import { evaluate } from 'mathjs'; // eval is a reserved word!
 
 /* Constants */
 const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -17,8 +17,8 @@ const maxPrecision = 16;
 function CalculatorDisplay(props) {
   const value = props.value;
   const pointAt = `${value}`.indexOf('.');
-  const decimalValue = value.substring(pointAt, math.eval(value.length));
-  const precisionWithFraction = (pointAt === -1 )?0:math.eval(decimalValue.length - 1);
+  const decimalValue = value.substring(pointAt, evaluate(value.length));
+  const precisionWithFraction = (pointAt === -1 )?0:evaluate(decimalValue.length - 1);
   let formattedValue = null;
   let scaleDown = null;
 
@@ -80,7 +80,7 @@ class Calculator extends Component {
     } else {
       stringToEvaluate = `${firstOperand}${operator}${displayValue}`;
       try {
-        newDisplayValue = `${math.eval(stringToEvaluate)}`
+        newDisplayValue = `${evaluate(stringToEvaluate)}`
       } catch (e) {
         newDisplayValue = 'Error';
       }

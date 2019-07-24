@@ -39,8 +39,7 @@ To make a production build, edit the *__package.json__* file and change the foll
 and then go ahead and run the build:-
 
 ```bash
-npm run build
-
+react-scripts build
 ```
 
 ### Acknowledgement
