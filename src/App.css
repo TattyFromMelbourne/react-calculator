@@ -10,15 +10,24 @@
   font-size: 1.8em;
 }
 
+.App-title.h1 {
+    display: inline-block;
+}
+
 .App-intro {
   padding: 0;
   color: grey;
   font: normal 1.2em 'Roboto';
+  padding-bottom: 1.2em;
 }
 
-@media (max-width: 767px) {
-  .App-header {
-    display: none;
-    visibility: hidden;
-  }
+.inner-triangle{
+  border-left: 120px solid transparent;
+  border-right: 120px solid green;
+  border-bottom: 120px solid transparent;
+  height: 0;
+  width: 0;
+  position: absolute;
+  right: 0px;
+  z-index: 2;
 }
