@@ -20,6 +20,7 @@ function CalculatorDisplay(props) {
   const decimalValue = value.substring(pointAt, evaluate(value.length));
   const precisionWithFraction = (pointAt === -1 )?0:evaluate(decimalValue.length - 1);
   let formattedValue = null;
+  let scientificNotation = null;
   let scaleDown = null;
 
   formattedValue = parseFloat(value).toLocaleString(undefined, {minimumFractionDigits: precisionWithFraction}); // take the default locale formatting
@@ -27,7 +28,12 @@ function CalculatorDisplay(props) {
     formattedValue = 'Error';
   } else {
     if (formattedValue.length > (maxPrecision - 1)) {
-      formattedValue = parseFloat(value).toExponential(maxPrecision - 4); // Allow at least 4 characters (for scientific notation e.g. e+14) in the output string
+      scientificNotation = parseFloat(value).toExponential(maxPrecision - 4); // Allow at least 4 characters (for scientific notation e.g. e+14) in the output string
+      if (scientificNotation.substring(scientificNotation.length - 3, scientificNotation.length) === 'e+0') { // if exponent part is not needed
+        scientificNotation = parseFloat(value).toExponential(maxPrecision - 1 );
+        scientificNotation = scientificNotation.substring(0, scientificNotation.length - 3)
+      }
+      formattedValue = scientificNotation;
       if (formattedValue === 'NaN') { //account for overflow
         formattedValue = 'Overflow\xA0Error';
       }
