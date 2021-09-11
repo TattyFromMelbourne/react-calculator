@@ -1,0 +1,8 @@
+{
+	"src/**/*.js": [
+		"npm run format",
+		"npm run lint:fix",
+		"npm run test:staged"
+	],
+	"src/**/*.{css,scss,sass}": "npm run format"
+}
