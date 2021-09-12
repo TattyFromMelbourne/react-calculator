@@ -268,6 +268,11 @@ class Calculator extends Component {
 	processNewKey(newKeyValue) {
 		const isDigit = digits.includes(newKeyValue);
 		const isOperator = operators.includes(newKeyValue);
+		const isInvalid =
+			isNaN(parseInt(newKeyValue)) || newKeyValue === '0';
+
+		if (this.state.displayValue === '0' && isInvalid)
+			return;
 
 		if (isDigit) {
 			this.processDigit(newKeyValue);
@@ -286,7 +291,6 @@ class Calculator extends Component {
 				<CalculatorDisplay
 					value={this.state.displayValue}
 				/>
-
 				<div className="calculator-keypad">
 					<div className="input-keys">
 						<div className="function-keys">
@@ -295,6 +299,7 @@ class Calculator extends Component {
 								value="C"
 								className="calculator-key key-clear"
 								onClick={this.handleClick}
+								data-testid="key-clear"
 							>
 								{this.state.clearAll ? 'AC' : 'C'}
 							</button>
@@ -303,6 +308,7 @@ class Calculator extends Component {
 								value="±"
 								className="calculator-key key-sign"
 								onClick={this.handleClick}
+								data-testid="key-sign-button"
 							>
 								&plusmn;
 							</button>
@@ -311,17 +317,22 @@ class Calculator extends Component {
 								value="%"
 								className="calculator-key key-percent"
 								onClick={this.handleClick}
+								data-testid="percent-button"
 							>
 								%
 							</button>
 						</div>
 
-						<div className="digit-keys">
+						<div
+							className="digit-keys"
+							data-testid="digits-key"
+						>
 							<button
 								id="key-0"
 								value="0"
 								className="calculator-key key-0"
 								onClick={this.handleClick}
+								data-testid="zero-button"
 							>
 								0
 							</button>
@@ -438,6 +449,7 @@ class Calculator extends Component {
 							value="+"
 							className="calculator-key key-add"
 							onClick={this.handleClick}
+							data-testid="plus-button"
 						>
 							+
 						</button>
