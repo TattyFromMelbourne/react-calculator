@@ -81,6 +81,7 @@ function CalculatorDisplay(props) {
 			<div
 				className="auto-scaling-text"
 				style={{ transform: scaleDown }}
+				data-testid="calculator-display"
 			>
 				{formattedValue}
 			</div>
