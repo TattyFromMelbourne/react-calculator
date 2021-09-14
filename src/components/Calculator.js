@@ -342,6 +342,7 @@ class Calculator extends Component {
 								value="."
 								className="calculator-key key-dot"
 								onClick={this.handleClick}
+								data-testid="dot-button"
 							>
 								&middot;
 							</button>
@@ -426,6 +427,7 @@ class Calculator extends Component {
 							value="/"
 							className="calculator-key key-divide"
 							onClick={this.handleClick}
+							data-testid="divide-button"
 						>
 							&divide;
 						</button>
@@ -434,6 +436,7 @@ class Calculator extends Component {
 							value="*"
 							className="calculator-key key-multiply"
 							onClick={this.handleClick}
+							data-testid="multiply-button"
 						>
 							&times;
 						</button>
@@ -442,6 +445,7 @@ class Calculator extends Component {
 							value="-"
 							className="calculator-key key-subtract"
 							onClick={this.handleClick}
+							data-testid="subtract-button"
 						>
 							&ndash;
 						</button>
@@ -458,6 +462,7 @@ class Calculator extends Component {
 							id="key-equals"
 							value="="
 							className="calculator-key key-equals"
+							data-testid="equal-button"
 							onClick={this.handleClick}
 						>
 							=
