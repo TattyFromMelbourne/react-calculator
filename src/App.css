@@ -1,33 +1,33 @@
 .App {
-  text-align: center;
+	text-align: center;
 }
 
 .App-header {
-  padding: 30px;
+	padding: 30px;
 }
 
 .App-title {
-  font-size: 1.8em;
+	font-size: 1.8em;
 }
 
 .App-title.h1 {
-    display: inline-block;
+	display: inline-block;
 }
 
 .App-intro {
-  padding: 0;
-  color: grey;
-  font: normal 1.2em 'Roboto';
-  padding-bottom: 1.2em;
+	padding: 0;
+	color: grey;
+	font: normal 1.2em 'Roboto';
+	padding-bottom: 1.2em;
 }
 
-.inner-triangle{
-  border-left: 120px solid transparent;
-  border-right: 120px solid green;
-  border-bottom: 120px solid transparent;
-  height: 0;
-  width: 0;
-  position: absolute;
-  right: 0px;
-  z-index: 2;
+.inner-triangle {
+	border-left: 120px solid transparent;
+	border-right: 120px solid green;
+	border-bottom: 120px solid transparent;
+	height: 0;
+	width: 0;
+	position: absolute;
+	right: 0px;
+	z-index: 2;
 }
